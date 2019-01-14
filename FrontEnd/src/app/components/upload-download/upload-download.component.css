@@ -1,0 +1,28 @@
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 30px;
+  width: 200px;
+  height: 100px;
+}
+
+.upload {
+  background-color: #4CAF50;
+}
+
+.download {
+  background-color: rgb(184, 12, 12);
+}
+
+.container {
+  height: 500px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
