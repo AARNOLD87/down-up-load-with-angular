@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest } from '@angular/common/http';
 import { of, Observable } from 'rxjs';
 
 @Injectable()
@@ -21,6 +21,13 @@ export class UploadDownloadService {
   public uploadFile(file): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.httpClient.post<any>(this.apiUploadUrl, formData);
+
+    return this.httpClient.request(new HttpRequest(
+      'POST',
+      this.apiUploadUrl,
+      formData,
+      {
+        reportProgress: true
+      }));
   }
 }

@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+.button {
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 30px;
+  width: 200px;
+  height: 100px;
+}
+
+.upload {
+  background-color: #4CAF50;
+  float: right;
+  height: 40px;
+  margin: 10px;
+}
+
+.download {
+  background-color: rgb(184, 12, 12);
+}
+
+.container {
+  height: 500px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.container-upload {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+}
