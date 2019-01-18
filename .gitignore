@@ -299,3 +299,5 @@
 
 # Cake - Uncomment if you are using it
 # tools/
+
+/BackEnd/wwwroot/uploads

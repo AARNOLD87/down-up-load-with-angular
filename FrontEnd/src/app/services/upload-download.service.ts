@@ -7,15 +7,29 @@ export class UploadDownloadService {
   private baseApiUrl: string;
   private apiDownloadUrl: string;
   private apiUploadUrl: string;
+  private apiFileUrl: string;
 
   constructor(private httpClient: HttpClient) {
     this.baseApiUrl = 'https://localhost:5001/api/';
     this.apiDownloadUrl = this.baseApiUrl + 'download';
     this.apiUploadUrl = this.baseApiUrl + 'upload';
+    this.apiFileUrl = this.baseApiUrl + 'files';
   }
 
-  public downloadFile(): Observable<string> {
-    return of(this.apiDownloadUrl);
+  public downloadFile(file: string): Observable<any> {
+    const downloadApiUrl = `${this.apiDownloadUrl}?file=${file}`;
+    const httpOptions = {
+      'responseType'  : 'blob' as 'json'
+    };
+
+    return this.httpClient.request(new HttpRequest(
+      'GET',
+      `${this.apiDownloadUrl}?file=${file}`,
+      null,
+      {
+        reportProgress: true,
+        responseType: 'blob' as 'json'
+      }));
   }
 
   public uploadFile(file): Observable<any> {
@@ -29,5 +43,9 @@ export class UploadDownloadService {
       {
         reportProgress: true
       }));
+  }
+
+  public getFiles(): Observable<any> {
+    return this.httpClient.get(this.apiFileUrl);
   }
 }

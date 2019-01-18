@@ -7,14 +7,14 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UploadDownloadService } from './services/upload-download.service';
 import { HttpClientModule } from '@angular/common/http';
 import { UploadComponent } from './components/upload/upload.component';
-import { ProgressComponent } from './components/progress/progress.component';
+import { DownloadComponent } from './components/download/download.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     UploadComponent,
-    ProgressComponent
+    DownloadComponent
   ],
   imports: [
     BrowserModule,

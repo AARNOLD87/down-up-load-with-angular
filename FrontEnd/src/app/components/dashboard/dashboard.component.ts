@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UploadDownloadService } from 'src/app/services/upload-download.service';
-import { HttpEventType } from '@angular/common/http';
+import { ProgressStatusEnum, ProgressStatus } from 'src/app/models/progress-status.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,49 +8,55 @@ import { HttpEventType } from '@angular/common/http';
 })
 export class DashboardComponent implements OnInit {
 
-  public selectedFile;
+  public files: string[];
+  public fileInDownload: string;
+  public percentage: number;
+  public showProgress: boolean;
 
   constructor(private service: UploadDownloadService) { }
 
   ngOnInit() {
+    this.getFiles();
   }
 
-  public download() {
-    this.service.downloadFile().subscribe(
-      url => {
-        const a = document.createElement('a');
-        a.setAttribute('style', 'display:none;');
-        document.body.appendChild(a);
-        a.href = url;
-        a.target = '_blank';
-        a.click();
+  private getFiles() {
+    this.service.getFiles().subscribe(
+      data => {
+        this.files = data.files;
       }
     );
   }
 
-  public upload(event) {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0];
-      this.service.uploadFile(file).subscribe(
-        data => {
-          if (data) {
-            console.log(data);
+  public downloadStatus(event: ProgressStatus) {
+    switch (event.status) {
+      case ProgressStatusEnum.IN_PROGRESS:
+        this.showProgress = true;
+        this.percentage = event.percentage;
+        break;
+      case ProgressStatusEnum.COMPLETE:
+        this.showProgress = false;
+        break;
+      case ProgressStatusEnum.ERROR:
+        this.showProgress = false;
+        alert('ci sono stati errori durante il download');
+        break;
+    }
+  }
 
-            switch (data.type) {
-              case HttpEventType.UploadProgress:
-                break;
-              case HttpEventType.Response:
-                this.selectedFile = '';
-                alert('upload andato a buon fine');
-                break;
-            }
-          }
-        },
-        error => {
-          this.selectedFile = '';
-          alert('ci sono stati errori durante l\'upload');
-        }
-      );
+  public uploadStatus(event: ProgressStatus) {
+    switch (event.status) {
+      case ProgressStatusEnum.IN_PROGRESS:
+        this.showProgress = true;
+        this.percentage = event.percentage;
+        break;
+      case ProgressStatusEnum.COMPLETE:
+        this.showProgress = false;
+        this.getFiles();
+        break;
+      case ProgressStatusEnum.ERROR:
+        this.showProgress = false;
+        alert('ci sono stati errori durante l\'upload');
+        break;
     }
   }
 }

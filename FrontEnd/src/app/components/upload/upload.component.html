@@ -1,10 +1,9 @@
 <div class="container-upload">
-  <button class="button upload" (click)="inputFile.click()">UPLOAD</button>
+  <button [disabled]="disabled" [ngClass]="{'disabled': disabled}" class="button upload" (click)="inputFile.click()">UPLOAD</button>
   <input
     name="file"
     id="file"
     [(ngModel)]="selectedFile"
     (change)="upload($event)"
     type="file" #inputFile hidden accept=".xls">
-  <app-progress [show]="showProgress" [percentage]="percentageUpload"></app-progress>
 </div>

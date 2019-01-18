@@ -40,32 +40,20 @@ namespace BackEnd.Controllers
 
         [HttpGet]
         [Route("download")]
-        public IActionResult Download() {
-            var comlumHeadrs = new string[]
-            {
-                "Column 1",
-                "Column 2",
-                "Column 3"
-            };
- 
-            var records = new[]
-            { 
-                new string[] {"name 1", "surname 1", "30" },
-                new string[] {"name 2", "surname 2", "30" },
-                new string[] {"name 3", "surname 3", "30" },
-                new string[] {"name 4", "surname 4", "30" },
-            }.ToList();
- 
-            // Build the file content
-            var csv = new StringBuilder();
-            records.ForEach(line =>
-            {
-                csv.AppendLine(string.Join(",", line));
-            });
- 
-            byte[] buffer = Encoding.ASCII.GetBytes($"{string.Join(",", comlumHeadrs)}\r\n{csv.ToString()}");
-   
-            return File(buffer,"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "file.csv"); 
+        public async Task<IActionResult> Download([FromQuery] string file) {
+            try {
+                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                var filePath = Path.Combine(uploads, file);
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(filePath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                return File(memory, GetContentType(filePath), file); 
+            }catch(Exception ex) {
+                return NotFound();
+            }
         }
 
         [HttpGet]
@@ -79,13 +67,41 @@ namespace BackEnd.Controllers
             var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
             if(Directory.Exists(uploads))
             {   
+                var provider = _hostingEnvironment.ContentRootFileProvider;
                 foreach (string fileName in Directory.GetFiles(uploads))
                 {
                     result.Count++;
-                    result.Files.Add(fileName);
+                    var fileInfo = provider.GetFileInfo(fileName);
+                    result.Files.Add(fileInfo.Name);
                 }
             }
             return Ok(result);
-        }        
+        }  
+
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }      
     }
 }

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { UploadDownloadService } from 'src/app/services/upload-download.service';
 import { HttpEventType } from '@angular/common/http';
+import { ProgressStatus, ProgressStatusEnum } from 'src/app/models/progress-status.model';
 
 @Component({
   selector: 'app-upload',
@@ -9,34 +10,35 @@ import { HttpEventType } from '@angular/common/http';
 
 export class UploadComponent {
   public selectedFile;
-  public percentageUpload: number;
-  public showProgress: boolean;
 
-  constructor(private service: UploadDownloadService) { }
+  @Input() public disabled: boolean;
+  @Output() public uploadStatus: EventEmitter<ProgressStatus>;
+
+  constructor(private service: UploadDownloadService) {
+    this.uploadStatus = new EventEmitter<ProgressStatus>();
+  }
 
   public upload(event) {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      this.percentageUpload = 0;
-      this.showProgress = true;
+      this.uploadStatus.emit( {status: ProgressStatusEnum.START});
       this.service.uploadFile(file).subscribe(
         data => {
           if (data) {
             switch (data.type) {
               case HttpEventType.UploadProgress:
-                this.percentageUpload = Math.round((data.loaded / data.total) * 100);
+                this.uploadStatus.emit( {status: ProgressStatusEnum.IN_PROGRESS, percentage: Math.round((data.loaded / data.total) * 100)});
                 break;
               case HttpEventType.Response:
                 this.selectedFile = '';
-                this.showProgress = false;
+                this.uploadStatus.emit( {status: ProgressStatusEnum.COMPLETE});
                 break;
             }
           }
         },
         error => {
           this.selectedFile = '';
-          this.showProgress = false;
-          alert('ci sono stati errori durante l\'upload');
+          this.uploadStatus.emit( {status: ProgressStatusEnum.ERROR});
         }
       );
     }
