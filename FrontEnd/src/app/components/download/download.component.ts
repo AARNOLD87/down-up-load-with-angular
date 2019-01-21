@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpEventType } from '@angular/common/http';
 import { UploadDownloadService } from 'src/app/services/upload-download.service';
 import { ProgressStatus, ProgressStatusEnum } from 'src/app/models/progress-status.model';

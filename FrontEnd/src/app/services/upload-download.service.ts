@@ -17,11 +17,6 @@ export class UploadDownloadService {
   }
 
   public downloadFile(file: string): Observable<any> {
-    const downloadApiUrl = `${this.apiDownloadUrl}?file=${file}`;
-    const httpOptions = {
-      'responseType'  : 'blob' as 'json'
-    };
-
     return this.httpClient.request(new HttpRequest(
       'GET',
       `${this.apiDownloadUrl}?file=${file}`,
