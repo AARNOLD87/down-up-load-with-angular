@@ -12,6 +12,8 @@ export class FileManagerComponent implements OnInit {
   public fileInDownload: string;
   public percentage: number;
   public showProgress: boolean;
+  public showDownloadError: boolean;
+  public showUploadError: boolean;
 
   constructor(private service: UploadDownloadService) { }
 
@@ -29,6 +31,9 @@ export class FileManagerComponent implements OnInit {
 
   public downloadStatus(event: ProgressStatus) {
     switch (event.status) {
+      case ProgressStatusEnum.START:
+        this.showDownloadError = false;
+        break;
       case ProgressStatusEnum.IN_PROGRESS:
         this.showProgress = true;
         this.percentage = event.percentage;
@@ -38,13 +43,16 @@ export class FileManagerComponent implements OnInit {
         break;
       case ProgressStatusEnum.ERROR:
         this.showProgress = false;
-        alert('ci sono stati errori durante il download');
+        this.showDownloadError = true;
         break;
     }
   }
 
   public uploadStatus(event: ProgressStatus) {
     switch (event.status) {
+      case ProgressStatusEnum.START:
+        this.showUploadError = false;
+        break;
       case ProgressStatusEnum.IN_PROGRESS:
         this.showProgress = true;
         this.percentage = event.percentage;
@@ -55,7 +63,7 @@ export class FileManagerComponent implements OnInit {
         break;
       case ProgressStatusEnum.ERROR:
         this.showProgress = false;
-        alert('ci sono stati errori durante l\'upload');
+        this.showUploadError = true;
         break;
     }
   }

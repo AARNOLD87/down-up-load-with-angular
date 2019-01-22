@@ -63,3 +63,9 @@ li a {
 li a:hover {
   background: #f6f6f6;
 }
+
+label.error {
+  font-size: 20pt;
+  color: red;
+  text-transform: uppercase;
+}

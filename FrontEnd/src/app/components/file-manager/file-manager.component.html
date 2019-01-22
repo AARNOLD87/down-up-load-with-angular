@@ -1,6 +1,8 @@
 <app-upload [disabled]="showProgress" (uploadStatus)="uploadStatus($event)"></app-upload>
 <h2>File List</h2>
 <p *ngIf="showProgress"> progress <strong>{{percentage}}%</strong></p>
+<label class="error" [hidden]="!showDownloadError">ci sono stati errori durante il download</label>
+<label class="error" [hidden]="!showUploadError">ci sono stati errori durante l'upload</label>
 <hr>
 <div class="container">
   <ul>
@@ -12,3 +14,4 @@
     </li>
   </ul>
 </div>
+
