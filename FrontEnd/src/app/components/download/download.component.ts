@@ -13,6 +13,8 @@ export class DownloadComponent {
   @Input() public fileName: string;
   @Output() public downloadStatus: EventEmitter<ProgressStatus>;
 
+  public fileURL: string;
+
   constructor(private service: UploadDownloadService) {
     this.downloadStatus = new EventEmitter<ProgressStatus>();
   }
@@ -35,6 +37,7 @@ export class DownloadComponent {
             a.href = URL.createObjectURL(downloadedFile);
             a.target = '_blank';
             a.click();
+            document.body.removeChild(a);
             break;
         }
       },

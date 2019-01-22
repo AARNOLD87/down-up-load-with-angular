@@ -3,10 +3,10 @@ import { UploadDownloadService } from 'src/app/services/upload-download.service'
 import { ProgressStatusEnum, ProgressStatus } from 'src/app/models/progress-status.model';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html'
+  selector: 'app-filemanager',
+  templateUrl: './file-manager.component.html'
 })
-export class DashboardComponent implements OnInit {
+export class FileManagerComponent implements OnInit {
 
   public files: string[];
   public fileInDownload: string;
@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit {
   private getFiles() {
     this.service.getFiles().subscribe(
       data => {
-        this.files = data.files;
+        this.files = data;
       }
     );
   }

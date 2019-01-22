@@ -23,7 +23,7 @@ export class UploadDownloadService {
       null,
       {
         reportProgress: true,
-        responseType: 'blob' as 'json'
+        responseType: 'blob'
       }));
   }
 
@@ -40,7 +40,7 @@ export class UploadDownloadService {
       }));
   }
 
-  public getFiles(): Observable<any> {
-    return this.httpClient.get(this.apiFileUrl);
+  public getFiles(): Observable<string[]> {
+    return this.httpClient.get<string[]>(this.apiFileUrl);
   }
 }

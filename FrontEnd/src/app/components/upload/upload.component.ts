@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, ViewChild, ElementRef } from '@angular/core';
 import { UploadDownloadService } from 'src/app/services/upload-download.service';
 import { HttpEventType } from '@angular/common/http';
 import { ProgressStatus, ProgressStatusEnum } from 'src/app/models/progress-status.model';
@@ -9,10 +9,9 @@ import { ProgressStatus, ProgressStatusEnum } from 'src/app/models/progress-stat
 })
 
 export class UploadComponent {
-  public selectedFile;
-
   @Input() public disabled: boolean;
   @Output() public uploadStatus: EventEmitter<ProgressStatus>;
+  @ViewChild('inputFile') inputFile: ElementRef;
 
   constructor(private service: UploadDownloadService) {
     this.uploadStatus = new EventEmitter<ProgressStatus>();
@@ -30,14 +29,14 @@ export class UploadComponent {
                 this.uploadStatus.emit( {status: ProgressStatusEnum.IN_PROGRESS, percentage: Math.round((data.loaded / data.total) * 100)});
                 break;
               case HttpEventType.Response:
-                this.selectedFile = '';
+                this.inputFile.nativeElement.value = '';
                 this.uploadStatus.emit( {status: ProgressStatusEnum.COMPLETE});
                 break;
             }
           }
         },
         error => {
-          this.selectedFile = '';
+          this.inputFile.nativeElement.value = '';
           this.uploadStatus.emit( {status: ProgressStatusEnum.ERROR});
         }
       );

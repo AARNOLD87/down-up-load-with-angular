@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace BackEnd.Controllers
 {
@@ -41,28 +42,25 @@ namespace BackEnd.Controllers
         [HttpGet]
         [Route("download")]
         public async Task<IActionResult> Download([FromQuery] string file) {
-            try {
-                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
-                var filePath = Path.Combine(uploads, file);
-                var memory = new MemoryStream();
-                using (var stream = new FileStream(filePath, FileMode.Open))
-                {
-                    await stream.CopyToAsync(memory);
-                }
-                memory.Position = 0;
-                return File(memory, GetContentType(filePath), file); 
-            }catch(Exception ex) {
+            var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+            var filePath = Path.Combine(uploads, file);
+            if (!System.IO.File.Exists(filePath))
                 return NotFound();
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
             }
+            memory.Position = 0;
+
+            return File(memory, GetContentType(filePath), file); 
         }
 
         [HttpGet]
         [Route("files")]
         public IActionResult Files() {
-            var result = new FilesResponse() {
-                Count = 0,
-                Files = new List<string>()
-            };
+            var result =  new List<string>();
 
             var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
             if(Directory.Exists(uploads))
@@ -70,9 +68,8 @@ namespace BackEnd.Controllers
                 var provider = _hostingEnvironment.ContentRootFileProvider;
                 foreach (string fileName in Directory.GetFiles(uploads))
                 {
-                    result.Count++;
                     var fileInfo = provider.GetFileInfo(fileName);
-                    result.Files.Add(fileInfo.Name);
+                    result.Add(fileInfo.Name);
                 }
             }
             return Ok(result);
@@ -81,27 +78,13 @@ namespace BackEnd.Controllers
 
         private string GetContentType(string path)
         {
-            var types = GetMimeTypes();
-            var ext = Path.GetExtension(path).ToLowerInvariant();
-            return types[ext];
-        }
-
-        private Dictionary<string, string> GetMimeTypes()
-        {
-            return new Dictionary<string, string>
+            var provider = new FileExtensionContentTypeProvider();
+            string contentType;
+            if(!provider.TryGetContentType(path, out contentType))
             {
-                {".txt", "text/plain"},
-                {".pdf", "application/pdf"},
-                {".doc", "application/vnd.ms-word"},
-                {".docx", "application/vnd.ms-word"},
-                {".xls", "application/vnd.ms-excel"},
-                {".xlsx", "application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet"},
-                {".png", "image/png"},
-                {".jpg", "image/jpeg"},
-                {".jpeg", "image/jpeg"},
-                {".gif", "image/gif"},
-                {".csv", "text/csv"}
-            };
-        }      
+                contentType = "application/octet-stream";
+            }
+            return contentType;
+        }
     }
 }
