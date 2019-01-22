@@ -10,7 +10,7 @@ export class UploadDownloadService {
   private apiFileUrl: string;
 
   constructor(private httpClient: HttpClient) {
-    this.baseApiUrl = 'https://localhost:5001/api/';
+    this.baseApiUrl = 'http://localhost:5001/api/';
     this.apiDownloadUrl = this.baseApiUrl + 'download';
     this.apiUploadUrl = this.baseApiUrl + 'upload';
     this.apiFileUrl = this.baseApiUrl + 'files';
