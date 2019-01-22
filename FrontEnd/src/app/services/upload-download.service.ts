@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { of, Observable } from 'rxjs';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class UploadDownloadService {
     this.apiFileUrl = this.baseApiUrl + 'files';
   }
 
-  public downloadFile(file: string): Observable<any> {
+  public downloadFile(file: string): Observable<HttpEvent<Blob>> {
     return this.httpClient.request(new HttpRequest(
       'GET',
       `${this.apiDownloadUrl}?file=${file}`,
@@ -27,7 +27,7 @@ export class UploadDownloadService {
       }));
   }
 
-  public uploadFile(file): Observable<any> {
+  public uploadFile(file: Blob): Observable<HttpEvent<void>> {
     const formData = new FormData();
     formData.append('file', file);
 
